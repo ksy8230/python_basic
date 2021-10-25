@@ -1,3 +1,6 @@
+# 사용한 버전 : Python 3.8.3
+# 실행 환경 : window CMD
+
 import os
 import random
 import time
@@ -17,8 +20,11 @@ def checkInputNumbers(inputNumbers):  # 올바른 입력인지 판별 함수
     if (inputNumbers == ""):
         print("입력값이 없습니다. 다시 입력해 주세요!")
         return 0
+    if (inputNumbers.isdecimal() != True):
+        print("숫자만 입력해 주세요")
+        return 0
     if (len(inputNumbers) != 4):
-        print(f"숫자 4자리만 입력해주세요. 다시 입력해 주세요!")
+        print("숫자 4자리만 입력해주세요. 다시 입력해 주세요!")
         return 0
     if (len(inputNumbers) != len(set(inputNumbers))):
         print("중복된 값이 있습니다. 다시 입력해 주세요!")
@@ -61,13 +67,25 @@ class BaseBallGame:
     strike_count = 0  # 스트라이크 횟수
     ball_count = 0  # 볼 횟수
     out_count = 0  # 아웃 횟수
-    state = 1  # 게임 상태 on
     records = []  # 게임 기록을 담은 배열
+    STATE_LIST = [{'title': '게임 시작', 'value': 1},
+                  {'title': '게임 종료', 'value': 0}]
 
-    def __init__(self):  # 게임상태 : 초기화
-        self.state = 0
+    def IntroGame(self):  # 게임 인트로 메소드
+
+        clearDisplay()  # 화면 정리
+        for i in range(0, len(self.STATE_LIST)):
+            print(str(self.STATE_LIST[i]['value']) +
+                  ". "+self.STATE_LIST[i]['title'])
+
+        cmd = int(input("번호 입력 >> "))
+        if(cmd == self.STATE_LIST[0]['value']):
+            self.playGame()
+        else:
+            self.exitGame()
 
     def continueGame(self, answer):  # 게임 계속 진행 여부 메소드
+
         if (self.strike_count != MAX_NUM_COUNT and yesOrNo("\n 재도전 하시겠습니까?") == 1):  # 스코어에 대한 기록 저장
             score_obj = {
                 "s": self.strike_count,
@@ -82,10 +100,10 @@ class BaseBallGame:
 
     def playGame(self):  # 게임 플레이 메소드
 
-        t1 = time.time()
+        startTime = time.time()
         while (self.strike_count < 4):
             clearDisplay()  # 화면 정리
-            print(numList)  # 디버깅용 정답 (나중에 지우기)
+            # print(numList)  # 디버깅용 정답 (실제 게임 시엔 주석)
             print("\n<<<<< SCORE >>>>>")
             for i in self.records:
                 print(
@@ -122,10 +140,10 @@ class BaseBallGame:
                     break
             else:
                 input("\n 계속 하려면 아무 키나 누르십시오...")
-        if (self.strike_count == 4):  # 모두 스크라이크
-            t2 = time.time()
+        if (self.strike_count == 4):  # 모두 스크라이크 시 경과 시간 출력
+            endTime = time.time()
             print("정답!\n")
-            printTime(t1, t2)
+            printTime(startTime, endTime)
             input("\n 종료 하려면 아무 키나 누르십시오...")
 
         self.exitGame()
@@ -135,6 +153,4 @@ class BaseBallGame:
 
 
 game = BaseBallGame()
-game.playGame()
-# todo... 🚩
-# 해답을 찾는데 걸린 시간 출력
+game.IntroGame()
