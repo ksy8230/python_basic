@@ -1,7 +1,6 @@
+import os
 import random
-import json 
 
-MAX_NUM_COUNT = 4 # 최대 숫자 갯수  
 
 # 1~9까지 랜덤 숫자 maxNumber 자리 생성 함수
 def makeRandomNumbers(maxNumber):
@@ -18,8 +17,8 @@ def checkInputNumbers(inputNumbers) :
     if (inputNumbers == "") :
         print("입력값이 없습니다. 다시 입력해 주세요!")
         return 0
-    if (len(inputNumbers) != MAX_NUM_COUNT) :
-        print(f"숫자 {MAX_NUM_COUNT}자리만 입력해주세요. 다시 입력해 주세요!")
+    if (len(inputNumbers) != 4) :
+        print(f"숫자 4자리만 입력해주세요. 다시 입력해 주세요!")
         return 0
     if (len(inputNumbers) != len(set(inputNumbers))) :
         print("중복된 값이 있습니다. 다시 입력해 주세요!")
@@ -39,6 +38,11 @@ def yesOrNo(message) :
         if reply[0] == 'n' :
             return False
 
+# 화면 정리 함수
+def clearDisplay():
+    os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
+
+MAX_NUM_COUNT = 4 # 최대 숫자 갯수  
 numList = makeRandomNumbers(MAX_NUM_COUNT) # 컴퓨터 임의의 수 4자리
 # print('컴퓨터 임의의 수 4자리', numList)
 
@@ -49,10 +53,15 @@ out_count = 0 # 아웃 횟수
 state = 1 # 게임 상태 on
 records = [] # 게임 기록을 담은 배열
 
+
 while (strike_count < 4 and state == 1):
-    print("\n")
+    clearDisplay()    # 화면 정리
+    print("\n<<<<< SCORE >>>>>")
+    for i in records :
+        print(f"{i['tryNumber']} -> s: {i['s']}, b: {i['b']}, o: {i['o']}")
+    print("\n==================")
     print(f"{try_count}번째 도전입니다.")
-    print("\n")
+    print("==================\n")
     answer = str(input("4자리 수를 입력해주세요. >> "))
 
     if (checkInputNumbers(answer) == 1) :
@@ -70,28 +79,24 @@ while (strike_count < 4 and state == 1):
             # 아웃 판정
             out_count = MAX_NUM_COUNT - strike_count - ball_count
         
-        
+        print("------------------------------")
         print(f'{strike_count} 스트라이크 | {ball_count} 볼 | {out_count} 아웃')
+        print("------------------------------\n")
         try_count += 1
 
         # 4자리 숫자 입력 후 분기 처리 (계속 진행 or 종료)
         if (strike_count != MAX_NUM_COUNT) :
             if (yesOrNo("재도전 하시겠습니까?") == 1) :
                 # 스코어에 대한 기록 저장
-                json_obj = {
+                score_obj = {
                     "s" : strike_count,
                     "b" : ball_count,
-                    "o" : out_count
+                    "o" : out_count,
+                    "tryNumber": answer
                 }
-                json_string = json.dumps(json_obj)
-                records.append(json_string)
-                for i in records :
-                    # print(f"s: {records[i]}, b: {ball_count}, o: {out_count}")
-
-                continue
+                records.append(score_obj)
             else :
-                # 해답을 찾는데 걸린 시간 출력
-                break
+                break    
         
     else :
         print("\n")
@@ -101,6 +106,5 @@ state = 0
 print("해답을 찾는데 걸린 시간 출력하고 종료")
 
 # todo... 🚩
-# 기록 누적
 # 해답을 찾는데 걸린 시간 출력
 
