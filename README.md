@@ -13,3 +13,13 @@
 #### x-path
 
 - html 문서에서 어떤 정보를 얻고자할 때 엘리먼트의 단계에 따라 엘리먼트1/엘리먼트2/엘리먼트3... 식으로 경로를 따는 것
+
+#### User-Agent
+
+- 요청 헤더에 사용자임을 알려주는 정보 넣어주기
+
+#### beautifulsoup4
+
+```
+pip install beautifulsoup4 lxml
+```

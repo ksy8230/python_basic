@@ -26,6 +26,7 @@ def print_match(m):
         print("m.string : ", m.string)  # 입력 받은 문자열
         print("m.start() : ", m.start())  # 일치하는 문자열의 시작 index
         print("m.end() : ", m.end())  # 일치하는 문자열의 끝 index
+
         print("m.span() : ", m.span())  # 일치하는 문자열의 시작 / 끝 index
     else:
         print("매칭되지 않았습니다.")
