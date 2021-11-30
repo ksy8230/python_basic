@@ -26,4 +26,13 @@ rank1 = soup.find("li", attrs={"class": "rank01"})
 # print(rank2.a.get_text())
 
 lstRanks = rank1.find_next_siblings("li")  # li 형제 객체들 다 찾아오기
-print(lstRanks)
+
+webtoonTopList = []
+for i in lstRanks:
+    obj = {
+        "title": i.a.get_text(),
+        "link": i.a["href"]
+    }
+    webtoonTopList.append(obj)
+
+print(webtoonTopList)
