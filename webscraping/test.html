@@ -10,7 +10,7 @@
     <div id="result"></div>
     
     <script>
-        fetch("http://localhost:80/list", {
+        fetch("http://localhost:80/api/list", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -22,7 +22,6 @@
             const tag = document.getElementById("result");
             tag.innerHTML = JSON.stringify(json.coupanLists)
         });
-
     </script>
 </body>
 </html>

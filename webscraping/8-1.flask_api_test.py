@@ -2,16 +2,16 @@ import requests, json
 import re
 from bs4 import BeautifulSoup
 
-from flask import Flask, jsonify  # 서버 구현을 위한 Flask 객체 import
+from flask import Flask, request, jsonify  # 서버 구현을 위한 Flask 객체 import
 from flask_cors import CORS
 from flask_restx import Api, Resource  # Api 구현을 위한 Api 객체 import
 from collections import OrderedDict # object create
 
 app = Flask(__name__)  # Flask 객체 선언, 파라미터로 어플리케이션 패키지의 이름을 넣어줌.
 # api = Api(app)  # Flask 객체에 Api 객체 등록
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-@app.route('/list', methods=['GET'])
+@app.route('/api/list', methods=['GET'])
 def get():
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"}
 
@@ -68,6 +68,7 @@ def get():
                 
     # print(jsonify(result_data))
     return jsonify(result_data)
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=80)
