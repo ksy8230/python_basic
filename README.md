@@ -18,23 +18,34 @@
 
 - 요청 헤더에 사용자임을 알려주는 정보 넣어주기
 
-#### beautifulsoup4
-
-```
-pip install beautifulsoup4 lxml
-```
+#### beautifulsoup4 (라이브러리)
 
 - html 문서값 넣어주고 lxml 파서를 통해서 Beatifulsoup 객체로 만들어주는 라이브러리
+  ```
+  pip install beautifulsoup4 lxml
+  ```
 
-#### CSV
+#### csv (라이브러리)
 
 - 엑셀 파일에서 한글이 깨지는 경우 open 함수의 encoding 값을 "utf-8-sig"로 설정
 
+  ```
+  f = open(filename, "w", encoding="utf-8-sig", newline="")
+  ```
+
+#### selenium
+
 ```
-f = open(filename, "w", encoding="utf-8-sig", newline="")
+pip install selenium
 ```
 
-#### TODO
+- 웹드라이버를 이용해 웹사이트를 제어
+
+- [웹드라이버 다운로드](https://sites.google.com/chromium.org/driver/) (ex. 크롬에서 사용할 경우, 크롬 버전 정보 확인 후 크롬 드라이버 설치 필요)
+
+---
+
+### 개인 심화
 
 - [x] 크롤링한 데이터 REST API로 만들어서 웹에서 GET 요청해 보기
-- [ ] 크롤링한 데이터 REST API로 만들어서 웹에서 버튼 클릭시 엑셀 파일 다운로드 해 보기
+- [x] 크롤링한 데이터 REST API로 만들어서 웹에서 버튼 클릭시 엑셀 파일 다운로드 해 보기

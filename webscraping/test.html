@@ -8,20 +8,58 @@
 </head>
 <body>
     <div id="result"></div>
+    <button id="coupang">엑셀 다운로드</button>
     
     <script>
-        fetch("http://localhost:80/api/list", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        // fetch("http://localhost:80/api/list", {
+        //     method: "GET",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        // })
+        // .then((res) => res.json())
+        // .then(json => {
+        //     console.log(json);
+        //     const tag = document.getElementById("result");
+        //     tag.innerHTML = JSON.stringify(json.coupanLists)
+        // });
+
+        const button = document.getElementById("coupang");
+        button.addEventListener("click", function(){
+            fetch("http://localhost:80/api/list/download", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            .then((res) => res.json())
+            .then(json => {
+                console.log(json)
+    
+                let csv = json
+                
+
+                var exportedFilenmae = 'fileTitle' + '.csv' || 'export.csv';
+
+                var blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+                if (navigator.msSaveBlob) { // IE 10+
+                    navigator.msSaveBlob(blob, exportedFilenmae);
+                } else {
+                    var link = document.createElement("a");
+                    if (link.download !== undefined) { // feature detection
+                        // Browsers that support HTML5 download attribute
+                        var url = URL.createObjectURL(blob);
+                        link.setAttribute("href", url);
+                        link.setAttribute("download", exportedFilenmae);
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                }
+            })
+            
         })
-        .then((res) => res.json())
-        .then(json => {
-            console.log(json);
-            const tag = document.getElementById("result");
-            tag.innerHTML = JSON.stringify(json.coupanLists)
-        });
     </script>
 </body>
 </html>

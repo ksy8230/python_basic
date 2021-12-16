@@ -1,5 +1,6 @@
 import requests, json
 import re
+import csv
 from bs4 import BeautifulSoup
 
 from flask import Flask, request, jsonify  # 서버 구현을 위한 Flask 객체 import
@@ -15,8 +16,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 def get():
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"}
 
-    result_data = { "coupanLists": [] }
-    
+    result_data = { "coupanLists": [] }    
     for i in range(1,6):
         url = "https://www.coupang.com/np/search?q=%EB%85%B8%ED%8A%B8%EB%B6%81&page={}".format(i)
         res = requests.get(url, headers=headers)
@@ -57,11 +57,35 @@ def get():
                 data["price"] = price
                 data["rate"] = rate
                 data["url"] = "https://www.coupang.com/"+link
-                
+
                 result_data["coupanLists"].append(data)
                 
-    return jsonify(result_data)
+    return jsonify(result_data["coupanLists"])
 
+@app.route('/api/list/download', methods=['GET'])
+def getCSV():
+    url = "https://finance.naver.com/sise/sise_market_sum.nhn?sosok=0&page="
+
+    title = "N,	종목명,	현재가,	전일비,	등락률,	액면가,	시가총액,상장주식수,외국인비율,	거래량,	PER,ROE"
+    # 시가총액 데이터 크롤링
+    csvStr = ""
+    csvStr += title
+    csvStr += "\n"
+    for page in range(1, 5):
+        res = requests.get(url + str(page))
+        res.raise_for_status()
+        soup = BeautifulSoup(res.text, "lxml")
+
+        data_rows = soup.find("table", attrs={"class": "type_2"}).find("tbody").find_all("tr")
+        for row in data_rows:
+            columns = row.find_all("td")
+            if len(columns) <= 1:
+                continue
+            data = [f'"{column.get_text().strip()}"' for column in columns]
+            csvStr += ','.join(data)
+            csvStr += "\n"
+    
+    return jsonify(csvStr)
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=80)
