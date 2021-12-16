@@ -17,7 +17,6 @@ def get():
 
     result_data = { "coupanLists": [] }
     
-
     for i in range(1,6):
         url = "https://www.coupang.com/np/search?q=%EB%85%B8%ED%8A%B8%EB%B6%81&page={}".format(i)
         res = requests.get(url, headers=headers)
@@ -58,15 +57,9 @@ def get():
                 data["price"] = price
                 data["rate"] = rate
                 data["url"] = "https://www.coupang.com/"+link
-
-                # print(f"name: {name}")
-                # print(f"price: {price}")
-                # print(f"rate: {rate}")
-                # print("{}".format("https://www.coupang.com/"+link))
-                # print("-"*100)
+                
                 result_data["coupanLists"].append(data)
                 
-    # print(jsonify(result_data))
     return jsonify(result_data)
 
 

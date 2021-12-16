@@ -25,3 +25,16 @@ pip install beautifulsoup4 lxml
 ```
 
 - html 문서값 넣어주고 lxml 파서를 통해서 Beatifulsoup 객체로 만들어주는 라이브러리
+
+#### CSV
+
+- 엑셀 파일에서 한글이 깨지는 경우 open 함수의 encoding 값을 "utf-8-sig"로 설정
+
+```
+f = open(filename, "w", encoding="utf-8-sig", newline="")
+```
+
+#### TODO
+
+- [x] 크롤링한 데이터 REST API로 만들어서 웹에서 GET 요청해 보기
+- [ ] 크롤링한 데이터 REST API로 만들어서 웹에서 버튼 클릭시 엑셀 파일 다운로드 해 보기
