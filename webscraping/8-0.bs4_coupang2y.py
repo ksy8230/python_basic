@@ -6,7 +6,8 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"
 }
 
-for i in range(1,6):
+# 쿠팡 크롤링
+for i in range(1,2):
     url = "https://www.coupang.com/np/search?q=%EB%85%B8%ED%8A%B8%EB%B6%81&page={}".format(i)
     res = requests.get(url, headers=headers)
     res.raise_for_status()
@@ -48,4 +49,26 @@ for i in range(1,6):
             print("{}".format("https://www.coupang.com/"+link))
             print("-"*100)
 
+# 지마켓 크롤링
+def gMarketCrawling():
+    url = "https://browse.gmarket.co.kr/search?keyword=%EB%85%B8%ED%8A%B8%EB%B6%81&k=32&p=1"
+    res = requests.get(url, headers=headers)
+    res.raise_for_status()
+    soup = BeautifulSoup(res.text, "lxml")
+    items = soup.find_all("div", attrs={"class":re.compile("box__component-itemcard--general")})
+    for item in items:
+        name = item.find("span", attrs={"class": "text__item"})["title"]
+        price = item.find("strong", attrs={"class": "text__value"}).get_text()
+        rate = item.find("span", attrs={"class": "image__awards-points"})
+        if(rate):
+            rate = rate.find("span").get_text()[4:-5]
+            
+        link = item.find("a", attrs={"class": "link__item"})["href"]
+        # print(link)
         
+# 네이버 크롤링
+def naverCrawling():
+    print("네이버 크롤링 todo")
+
+naverCrawling()
+gMarketCrawling()

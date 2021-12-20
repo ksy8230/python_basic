@@ -15,18 +15,16 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 @app.route('/api/list', methods=['GET'])
 def get():
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"}
+    result_data = { "coupanLists": [], "gmarketLists": [] }    
 
-    result_data = { "coupanLists": [] }    
+    # 쿠팡 크롤링
     for i in range(1,6):
         url = "https://www.coupang.com/np/search?q=%EB%85%B8%ED%8A%B8%EB%B6%81&page={}".format(i)
         res = requests.get(url, headers=headers)
         res.raise_for_status()
-        # html 문서값 넣어주고 lxml 파서를 통해서 Beatifulsoup 객체로 만들기
-        soup = BeautifulSoup(res.text, "lxml")
 
-        # li 태그에서 class이름이 search-product로 시작하는 모든 li 태그들
-        items = soup.find_all("li", attrs={"class":re.compile("^search-product")})
-
+        soup = BeautifulSoup(res.text, "lxml") # html 문서값 넣어주고 lxml 파서를 통해서 Beatifulsoup 객체로 만들기
+        items = soup.find_all("li", attrs={"class":re.compile("^search-product")}) # li 태그에서 class이름이 search-product로 시작하는 모든 li 태그들
         for item in items:
             ad_tag = item.find("span", attrs={"class": "ad-badge"})
             name = item.find("div", attrs={"class":"name"}).get_text()
@@ -59,8 +57,31 @@ def get():
                 data["url"] = "https://www.coupang.com/"+link
 
                 result_data["coupanLists"].append(data)
-                
-    return jsonify(result_data["coupanLists"])
+    
+    # 지마켓 크롤링
+    for i in range(1, 3):
+        url = "https://browse.gmarket.co.kr/search?keyword=%EB%85%B8%ED%8A%B8%EB%B6%81&k=32&p={}".format(i)
+        res = requests.get(url, headers=headers)
+        res.raise_for_status()
+        soup = BeautifulSoup(res.text, "lxml")
+        items = soup.find_all("div", attrs={"class":re.compile("box__component-itemcard--general")})
+        for item in items:
+            name = item.find("span", attrs={"class": "text__item"})["title"]
+            price = item.find("strong", attrs={"class": "text__value"}).get_text()
+            rate = item.find("span", attrs={"class": "image__awards-points"})
+            if(rate):
+                rate = rate.find("span").get_text()[4:-5]
+            link = item.find("a", attrs={"class": "link__item"})["href"]
+            
+            data = OrderedDict()
+            data["name"] = name
+            data["price"] = price
+            data["rate"] = rate
+            data["url"] = link
+
+            result_data["gmarketLists"].append(data)
+
+    return jsonify(result_data)
 
 @app.route('/api/list/download', methods=['GET'])
 def getCSV():
