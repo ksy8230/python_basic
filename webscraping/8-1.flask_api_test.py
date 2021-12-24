@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify  # 서버 구현을 위한 Flask 객체 import
 from flask_cors import CORS
 from collections import OrderedDict
+from datetime import datetime as dt
 
 # from requests.api import request # object create
 
@@ -139,6 +140,29 @@ def getCSV():
             csvStr += "\n"
     
     return jsonify(csvStr)
+
+@app.route('/api/weight/lists', methods=['GET'])
+def getTotalWeightLists():
+    result_data = { "weightLists": [{ "date": '2021-12-25', "value": 1.41, "memo": 'test1' },{ "date": '2020-12-26', "value": 1.42, "memo": 'test2' },{ "date": '2019-12-27', "value": 1.44, "memo": 'test3' }]}
+    # query = request.args.get('year') # ex. 2020
+    query = 2020 # ex. 2020
+
+    transferDate = []
+    for list in result_data["weightLists"] :
+        data = OrderedDict()
+
+        if dt.date(dt.strptime(list["date"], "%Y-%m-%d")).year == query :
+            data["data"] = list["date"]
+            data["value"] = list["value"]
+            data["memo"] = list["memo"]
+            print(dt.date(dt.strptime(list["date"], "%Y-%m-%d")))
+            transferDate.append(data)
+        
+    
+    print(transferDate)
+    # transferToDate = dt.strptime("2018-01-31", "%Y-%m-%d") # 문자열 -> datetime으로 변환
+    
+    return jsonify(transferDate), 200
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=80)
