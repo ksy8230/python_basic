@@ -143,26 +143,40 @@ def getCSV():
 
 @app.route('/api/weight/lists', methods=['GET'])
 def getTotalWeightLists():
-    result_data = { "weightLists": [{ "date": '2021-12-25', "value": 1.41, "memo": 'test1' },{ "date": '2020-12-26', "value": 1.42, "memo": 'test2' },{ "date": '2019-12-27', "value": 1.44, "memo": 'test3' }]}
-    # query = request.args.get('year') # ex. 2020
-    query = 2020 # ex. 2020
+    databaseData = { "weightLists": [{ "date": '2022-12-25', "value": 1.41, "memo": 'test1' },{ "date": '2021-12-26', "value": 1.42, "memo": 'test2' },{ "date": '2021-12-27', "value": 1.44, "memo": 'test3' }]}
+    query = request.args.get('year') # ex. 2020
 
-    transferDate = []
-    for list in result_data["weightLists"] :
+    filteredData = {"weightLists":[]}
+    for list in databaseData["weightLists"] :
         data = OrderedDict()
 
-        if dt.date(dt.strptime(list["date"], "%Y-%m-%d")).year == query :
-            data["data"] = list["date"]
+        if dt.date(dt.strptime(list["date"], "%Y-%m-%d")).year == int(query) :
+            data["date"] = list["date"]
             data["value"] = list["value"]
             data["memo"] = list["memo"]
             print(dt.date(dt.strptime(list["date"], "%Y-%m-%d")))
-            transferDate.append(data)
+            filteredData["weightLists"].append(data)
         
-    
-    print(transferDate)
+    print(filteredData)
     # transferToDate = dt.strptime("2018-01-31", "%Y-%m-%d") # 문자열 -> datetime으로 변환
     
-    return jsonify(transferDate), 200
+    return jsonify(filteredData), 200
+
+@app.route('/api/weight/list', methods=['POST'])
+def postWeightLists() :
+    params = json.loads(request.get_data(), encoding='utf-8')
+    responseData = { "message": "" }
+    print(params)
+
+    if ("date" not in params) :
+        responseData["message"] = "올바른 형식을 요청해야 합니다."
+        return jsonify(responseData), 503
+    elif ("value" not in params) :
+        responseData["message"] = "올바른 형식을 요청해야 합니다."
+        return jsonify(responseData), 503
+    else :
+        responseData["message"] = "상품이 추가되었습니다."
+        return jsonify(responseData), 201
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=80)
