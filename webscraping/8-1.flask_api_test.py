@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify  # 서버 구현을 위한 Flask 객�
 from flask_cors import CORS
 from collections import OrderedDict
 from datetime import datetime as dt
+import time
 
 # from requests.api import request # object create
 
@@ -12,8 +13,10 @@ app = Flask(__name__)  # Flask 객체 선언, 파라미터로 어플리케이션
 # api = Api(app)  # Flask 객체에 Api 객체 등록
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
+databaseData = { "weightLists": [{ "id": "1", "date": '2022-12-25', "value": 1.41, "memo": 'test1' },{ "id": "2", "date": '2021-12-26', "value": 1.42, "memo": 'test2' },{ "id": "3", "date": '2021-12-27', "value": 1.44, "memo": 'test3' }]}
+
 @app.route('/api/list', methods=['GET'])
-def get():
+def getMarketLists():
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"}
     result_data = { "coupanLists": [], "gmarketLists": [], "emartLists": [] }    
 
@@ -143,7 +146,7 @@ def getCSV():
 
 @app.route('/api/weight/lists', methods=['GET'])
 def getTotalWeightLists():
-    databaseData = { "weightLists": [{ "date": '2022-12-25', "value": 1.41, "memo": 'test1' },{ "date": '2021-12-26', "value": 1.42, "memo": 'test2' },{ "date": '2021-12-27', "value": 1.44, "memo": 'test3' }]}
+    
     query = request.args.get('year') # ex. 2020
 
     filteredData = {"weightLists":[]}
@@ -151,6 +154,7 @@ def getTotalWeightLists():
         data = OrderedDict()
 
         if dt.date(dt.strptime(list["date"], "%Y-%m-%d")).year == int(query) :
+            data["id"] = list["id"]
             data["date"] = list["date"]
             data["value"] = list["value"]
             data["memo"] = list["memo"]
@@ -163,10 +167,11 @@ def getTotalWeightLists():
     return jsonify(filteredData), 200
 
 @app.route('/api/weight/list', methods=['POST'])
-def postWeightLists() :
+def postWeightList() :
     params = json.loads(request.get_data(), encoding='utf-8')
-    responseData = { "message": "" }
     print(params)
+    # todo: database add
+    responseData = { "message": "", "data": {} }
 
     if ("date" not in params) :
         responseData["message"] = "올바른 형식을 요청해야 합니다."
@@ -176,7 +181,33 @@ def postWeightLists() :
         return jsonify(responseData), 503
     else :
         responseData["message"] = "상품이 추가되었습니다."
+        responseData["data"] = params
         return jsonify(responseData), 201
+
+@app.route('/api/weight/list', methods=['DELETE'])
+def deleteWeightList() :
+    params = json.loads(request.get_data(), encoding='utf-8') # {id: 1}
+    print(params)
+    # todo: database delete
+    responseData = { "message": "", "data": {} }
+
+    responseData["message"] = "상품이 삭제되었습니다."
+    responseData["data"] = params
+
+    return jsonify(responseData), 200
+
+@app.route('/api/weight/list', methods=['PATCH'])
+def patchWeightList() :
+    params = json.loads(request.get_data(), encoding='utf-8') # {id: 1, date: '2021-12-31', value: '1.45, memo: '...'}
+    print(params)
+    # todo: database patch
+    responseData = { "message": "", "data": {} }
+
+    responseData["message"] = "상품이 수정되었습니다."
+    responseData["data"] = params
+
+    return jsonify(responseData), 200
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=80)
